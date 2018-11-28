@@ -11,13 +11,13 @@ type Handler func(data []byte)
 
 // Subscriber 接收端
 type Subscriber struct {
-	psmq    *psmq
+	psmq    *PSMQ
 	msgs    <-chan amqp.Delivery
 	handler Handler
 }
 
 // NewSubscriber new a subscriber
-func NewSubscriber(pb *psmq, exchange string, queueTTLSec int32, h Handler) (*Subscriber, error) {
+func NewSubscriber(pb *PSMQ, exchange string, queueTTLSec int32, h Handler) (*Subscriber, error) {
 	failedPrefix := "New subscriber failed"
 	err := pb.declareExchange(exchange)
 	if err != nil {

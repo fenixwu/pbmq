@@ -8,12 +8,12 @@ type contentType string
 
 // Publisher 發送端
 type Publisher struct {
-	psmq                  *psmq
+	psmq                  *PSMQ
 	contentType, exchange string
 }
 
 // NewPublisher a publisher
-func NewPublisher(pb *psmq, contentType, exchange string) (*Publisher, error) {
+func NewPublisher(pb *PSMQ, contentType, exchange string) (*Publisher, error) {
 	err := pb.declareExchange(exchange)
 	if err != nil {
 		return nil, failedError("New publisher failed", err)
