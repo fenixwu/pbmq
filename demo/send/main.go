@@ -12,14 +12,14 @@ type message struct {
 }
 
 func main() {
-	pb, err := psmq.New("amqp://guest:guest@localhost:5672/")
+	ps, err := psmq.New("amqp://guest:guest@localhost:5672/")
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
-	defer pb.Close()
+	defer ps.Close()
 
-	p, err := psmq.NewPublisher(pb, "application/json", "master")
+	p, err := ps.NewPublisher("application/json", "master")
 	if err != nil {
 		log.Fatal(err)
 		return

@@ -4,8 +4,6 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type contentType string
-
 // Publisher 發送端
 type Publisher struct {
 	psmq                  *PSMQ
@@ -13,12 +11,12 @@ type Publisher struct {
 }
 
 // NewPublisher a publisher
-func NewPublisher(pb *PSMQ, contentType, exchange string) (*Publisher, error) {
-	err := pb.declareExchange(exchange)
+func (ps *PSMQ) NewPublisher(contentType, exchange string) (*Publisher, error) {
+	err := ps.declareExchange(exchange)
 	if err != nil {
 		return nil, failedError("New publisher failed", err)
 	}
-	return &Publisher{pb, contentType, exchange}, nil
+	return &Publisher{ps, contentType, exchange}, nil
 }
 
 // Publish 發訊息

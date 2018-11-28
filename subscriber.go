@@ -17,30 +17,30 @@ type Subscriber struct {
 }
 
 // NewSubscriber new a subscriber
-func NewSubscriber(pb *PSMQ, exchange string, queueTTLSec int32, h Handler) (*Subscriber, error) {
+func (ps *PSMQ) NewSubscriber(exchange string, queueTTLSec int32, h Handler) (*Subscriber, error) {
 	failedPrefix := "New subscriber failed"
-	err := pb.declareExchange(exchange)
+	err := ps.declareExchange(exchange)
 	if err != nil {
 		return nil, failedError(failedPrefix, err)
 	}
 
-	queue, err := pb.declareQueue(queueTTLSec)
+	queue, err := ps.declareQueue(queueTTLSec)
 	if err != nil {
 		return nil, failedError(failedPrefix, err)
 	}
 
 	// ----- Binding Queue -----
-	err = pb.bindQueue(queue, exchange)
+	err = ps.bindQueue(queue, exchange)
 	if err != nil {
 		return nil, failedError(failedPrefix, err)
 	}
 
 	// ----- Consumer -----
-	msgs, err := pb.channel.Consume(queue, "", true, false, false, false, nil)
+	msgs, err := ps.channel.Consume(queue, "", true, false, false, false, nil)
 	if err != nil {
 		return nil, failedError(failedPrefix, err)
 	}
-	return &Subscriber{pb, msgs, h}, nil
+	return &Subscriber{ps, msgs, h}, nil
 }
 
 // Run a subscriber

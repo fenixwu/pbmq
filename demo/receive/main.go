@@ -14,18 +14,18 @@ type message struct {
 }
 
 func main() {
-	pb, err := psmq.New("amqp://guest:guest@localhost:5672/")
+	ps, err := psmq.New("amqp://guest:guest@localhost:5672/")
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
-	defer pb.Close()
+	defer ps.Close()
 
 	wg := &sync.WaitGroup{}
 	for i := 0; i < 5; i++ {
 		wg.Add(1)
 		go func(wg *sync.WaitGroup, i int) {
-			s, err := psmq.NewSubscriber(pb, "master", 30, printMsg)
+			s, err := ps.NewSubscriber("master", 30, printMsg)
 			if err != nil {
 				log.Fatal(err)
 				return
