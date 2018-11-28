@@ -37,12 +37,12 @@ func main() {
 	wg.Wait()
 }
 
-func printMsg(data []byte) error {
+func printMsg(data []byte) {
 	var msg message
 	err := json.Unmarshal(data, &msg)
 	if err != nil {
-		return err
+		return
 	}
 	fmt.Printf("Receive task \"%s\", status \"%s\"\n", msg.Name, msg.Status)
-	return nil
+	return
 }

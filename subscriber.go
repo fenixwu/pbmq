@@ -7,7 +7,7 @@ import (
 )
 
 // Handler 接到訊息之後的動作
-type Handler func(data []byte) error
+type Handler func(data []byte)
 
 // Subscriber 接收端
 type Subscriber struct {
@@ -36,7 +36,7 @@ func NewSubscriber(pb *psmq, exchange string, queueTTLSec int32, h Handler) (*Su
 	}
 
 	// ----- Consumer -----
-	msgs, err := pb.channel.Consume(queue, "", false, false, false, false, nil)
+	msgs, err := pb.channel.Consume(queue, "", true, false, false, false, nil)
 	if err != nil {
 		return nil, failedError(failedPrefix, err)
 	}
@@ -49,12 +49,7 @@ func (s *Subscriber) Run() {
 
 	go func() {
 		for d := range s.msgs {
-			err := s.handler(d.Body)
-			if err != nil {
-				s.psmq.channel.Ack(d.DeliveryTag, false)
-				continue
-			}
-			s.psmq.channel.Nack(d.DeliveryTag, false, false)
+			s.handler(d.Body)
 		}
 	}()
 	log.Printf("[psmq] Waiting for message. Press \"CTRL+C\" to exit.")
