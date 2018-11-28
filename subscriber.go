@@ -1,4 +1,4 @@
-package pbmq
+package psmq
 
 import (
 	"log"
@@ -11,13 +11,13 @@ type Handler func(data []byte) error
 
 // Subscriber 接收端
 type Subscriber struct {
-	pbmq    *PBMQ
+	psmq    *psmq
 	msgs    <-chan amqp.Delivery
 	handler Handler
 }
 
 // NewSubscriber new a subscriber
-func NewSubscriber(pb *PBMQ, exchange string, queueTTLSec int32, h Handler) (*Subscriber, error) {
+func NewSubscriber(pb *psmq, exchange string, queueTTLSec int32, h Handler) (*Subscriber, error) {
 	failedPrefix := "New subscriber failed"
 	err := pb.declareExchange(exchange)
 	if err != nil {
@@ -51,12 +51,12 @@ func (s *Subscriber) Run() {
 		for d := range s.msgs {
 			err := s.handler(d.Body)
 			if err != nil {
-				s.pbmq.channel.Ack(d.DeliveryTag, false)
+				s.psmq.channel.Ack(d.DeliveryTag, false)
 				continue
 			}
-			s.pbmq.channel.Nack(d.DeliveryTag, false, false)
+			s.psmq.channel.Nack(d.DeliveryTag, false, false)
 		}
 	}()
-	log.Printf("[PBMQ] Waiting for message. Press \"CTRL+C\" to exit.")
+	log.Printf("[psmq] Waiting for message. Press \"CTRL+C\" to exit.")
 	<-forever
 }

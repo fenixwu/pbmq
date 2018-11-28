@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"game-lottery/pbmq"
+	"game-lottery/psmq"
 	"log"
 )
 
@@ -12,14 +12,14 @@ type message struct {
 }
 
 func main() {
-	pb, err := pbmq.New("amqp://guest:guest@localhost:5672/")
+	pb, err := psmq.New("amqp://guest:guest@localhost:5672/")
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
 	defer pb.Close()
 
-	p, err := pbmq.NewPublisher(pb, "application/json", "master")
+	p, err := psmq.NewPublisher(pb, "application/json", "master")
 	if err != nil {
 		log.Fatal(err)
 		return

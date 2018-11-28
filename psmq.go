@@ -1,4 +1,4 @@
-package pbmq
+package psmq
 
 import (
 	"errors"
@@ -6,14 +6,14 @@ import (
 	"github.com/streadway/amqp"
 )
 
-// PBMQ is a message queue just for Publish/Subscribe.
-type PBMQ struct {
+// psmq is a message queue just for Publish/Subscribe.
+type psmq struct {
 	connection *amqp.Connection
 	channel    *amqp.Channel
 }
 
 // New a rabbit
-func New(url string) (*PBMQ, error) {
+func New(url string) (*psmq, error) {
 	connection, err := amqp.Dial(url)
 	if err != nil {
 		return nil, failedError("Connecte failed", err)
@@ -24,17 +24,17 @@ func New(url string) (*PBMQ, error) {
 		return nil, failedError("Open channel failed", err)
 	}
 
-	return &PBMQ{connection, channel}, nil
+	return &psmq{connection, channel}, nil
 }
 
 // Close 關閉
-func (pb *PBMQ) Close() {
+func (pb *psmq) Close() {
 	pb.connection.Close()
 	pb.channel.Close()
 }
 
 // 宣告隊列
-func (pb *PBMQ) declareQueue(queueTTLSec int32) (queue string, err error) {
+func (pb *psmq) declareQueue(queueTTLSec int32) (queue string, err error) {
 	var ttl int32 = 32
 	if queueTTLSec > 0 {
 		ttl = queueTTLSec
@@ -54,7 +54,7 @@ func (pb *PBMQ) declareQueue(queueTTLSec int32) (queue string, err error) {
 }
 
 // 宣告交換器
-func (pb *PBMQ) declareExchange(name string) error {
+func (pb *psmq) declareExchange(name string) error {
 	err := pb.channel.ExchangeDeclare(name, amqp.ExchangeFanout, true, false, false, false, nil)
 	if err != nil {
 		return failedError("Declare exchange failed", err)
@@ -63,7 +63,7 @@ func (pb *PBMQ) declareExchange(name string) error {
 }
 
 // 綁定隊列收發規則
-func (pb *PBMQ) bindQueue(queue, exchange string) error {
+func (pb *psmq) bindQueue(queue, exchange string) error {
 	err := pb.channel.QueueBind(queue, "", exchange, false, nil)
 	if err != nil {
 		return failedError("Bind queue failed", err)

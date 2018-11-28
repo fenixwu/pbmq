@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"game-lottery/pbmq"
+	"game-lottery/psmq"
 	"log"
 	"sync"
 )
@@ -14,7 +14,7 @@ type message struct {
 }
 
 func main() {
-	pb, err := pbmq.New("amqp://guest:guest@localhost:5672/")
+	pb, err := psmq.New("amqp://guest:guest@localhost:5672/")
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -25,7 +25,7 @@ func main() {
 	for i := 0; i < 5; i++ {
 		wg.Add(1)
 		go func(wg *sync.WaitGroup, i int) {
-			s, err := pbmq.NewSubscriber(pb, "master", 30, printMsg)
+			s, err := psmq.NewSubscriber(pb, "master", 30, printMsg)
 			if err != nil {
 				log.Fatal(err)
 				return

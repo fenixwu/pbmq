@@ -1,4 +1,4 @@
-package pbmq
+package psmq
 
 import (
 	"github.com/streadway/amqp"
@@ -8,12 +8,12 @@ type contentType string
 
 // Publisher 發送端
 type Publisher struct {
-	pbmq                  *PBMQ
+	psmq                  *psmq
 	contentType, exchange string
 }
 
 // NewPublisher a publisher
-func NewPublisher(pb *PBMQ, contentType, exchange string) (*Publisher, error) {
+func NewPublisher(pb *psmq, contentType, exchange string) (*Publisher, error) {
 	err := pb.declareExchange(exchange)
 	if err != nil {
 		return nil, failedError("New publisher failed", err)
@@ -23,7 +23,7 @@ func NewPublisher(pb *PBMQ, contentType, exchange string) (*Publisher, error) {
 
 // Publish 發訊息
 func (p *Publisher) Publish(message []byte) error {
-	err := p.pbmq.channel.Publish(p.exchange, "", false, false,
+	err := p.psmq.channel.Publish(p.exchange, "", false, false,
 		amqp.Publishing{
 			DeliveryMode: 2, // persistence
 			ContentType:  p.contentType,
