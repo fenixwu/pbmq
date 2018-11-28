@@ -6,6 +6,8 @@ import (
 	"github.com/streadway/amqp"
 )
 
+const defaultQueueTTLSec int32 = 30
+
 // psmq is a message queue just for Publish/Subscribe.
 type psmq struct {
 	connection *amqp.Connection
@@ -35,7 +37,7 @@ func (pb *psmq) Close() {
 
 // 宣告隊列
 func (pb *psmq) declareQueue(queueTTLSec int32) (queue string, err error) {
-	var ttl int32 = 32
+	var ttl = defaultQueueTTLSec
 	if queueTTLSec > 0 {
 		ttl = queueTTLSec
 	}
